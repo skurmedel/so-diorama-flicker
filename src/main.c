@@ -59,7 +59,7 @@ void init_timers(void)
 
     /* 
         On the ATtiny85, these pins won't get PWMed unless they are configured
-        as outpus in DDRB, so we do just that.
+        as outputs in DDRB, so we do just that.
     */
     DDRB |=  (_BV(PIN_OUT_DIMMED.n) | _BV(PIN_OUT_FLICKER.n));
 
