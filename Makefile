@@ -1,5 +1,8 @@
 DEVICE=attiny85
-CLOCK=1000000 # 1mHz
+# The system clock, we assume the default attiny85 internal clock at 1mHz.
+# This mostly affect some avr-libc macros, so if the code uses them, it will 
+# fail. This value is available as a macro F_CPU. 
+CLOCK=1000000 
 
 SOURCES=src/flicker.c src/main.c
 OBJECTS=$(SOURCES:.c=.o)
