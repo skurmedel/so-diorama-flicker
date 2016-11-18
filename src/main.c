@@ -85,7 +85,10 @@ void init_io(void)
 
 int main(void)
 {
-    ATOMIC_BLOCK(ATOMIC_FORCEON)
+    /* 
+        Put init stuff inside here, and don't touch the interrupt enable flags.
+    */
+    ATOMIC_BLOCK(ATOMIC_FORCEON) 
     {
         init_io();
         init_timers();
