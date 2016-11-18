@@ -4,7 +4,7 @@ CLOCK=1000000 # 1mHz
 SOURCES=src/flicker.c src/main.c
 OBJECTS=$(SOURCES:.c=.o)
 CC=avr-gcc
-CFLAGS=-Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -g
+CFLAGS=-Wall -std=c99 -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -g
 
 main.elf: $(OBJECTS)
 	$(CC) $(CFLAGS) -o main.elf $(OBJECTS)

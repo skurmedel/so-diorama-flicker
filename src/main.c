@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <util/atomic.h>
 
 struct input_pin
 {
@@ -58,7 +59,7 @@ void init_timers(void)
 
     /* 
         On the ATtiny85, these pins won't get PWMed unless they are configured
-        as outpus in DDB, so we do just that.
+        as outpus in DDRB, so we do just that.
     */
     DDRB |=  (_BV(PIN_OUT_DIMMED.n) | _BV(PIN_OUT_FLICKER.n));
 
@@ -68,7 +69,6 @@ void init_timers(void)
     OCR0A = 0x80;
 
     GTCCR &= ~_BV(TSM);
-    sei(); /* Allows interrupts. */
 }
 
 /*
@@ -81,14 +81,15 @@ void init_io(void)
     */
     PORTB |= (_BV(PIN_IN_FLICKER_ONOFF_SWITCH.n) * PIN_IN_FLICKER_ONOFF_SWITCH.pull_up)
           |  (_BV(PIN_IN_FLICKER_MODE_SWITCH.n) * PIN_IN_FLICKER_MODE_SWITCH.pull_up);
-
-    sei();
 }
 
 int main(void)
 {
-    init_io();
-    init_timers();
+    ATOMIC_BLOCK(ATOMIC_FORCEON)
+    {
+        init_io();
+        init_timers();
+    }
 
     while (1)
     {
