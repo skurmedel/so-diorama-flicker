@@ -10,8 +10,8 @@ main.elf: $(OBJECTS)
 	$(CC) $(CFLAGS) -o main.elf $(OBJECTS)
 
 main.hex: main.elf
-	rm -f main.ex
-	avr-objcopy -j .text -j .data - O ihex main.elf main.hex 
+	rm -f main.hex
+	avr-objcopy -j .text -j .data -O ihex main.elf main.hex 
 	avr-size --format=avr --mcu=$(DEVICE) main.elf
 
 %.o: %.c
@@ -21,3 +21,6 @@ all: main.hex
 
 disasm: main.elf
 	avr-objdump -d main.elf
+
+dude: main.hex 
+	avrdude -c $(PROGRAMMER) -P usb -U flash:w:main.hex:i
