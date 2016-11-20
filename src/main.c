@@ -24,9 +24,9 @@ struct output_pin
 
     The defaults are set according to the general schematic.
 */
-static const struct input_pin PIN_IN_FLICKER_MODE_SWITCH     = { 2, PULL_UP_ON };
-static const struct input_pin PIN_IN_FLICKER_ONOFF_SWITCH    = { 3, PULL_UP_ON };
-static const struct input_pin PIN_IN_DIMMING_POT             = { 4, PULL_UP_OFF };
+static const struct input_pin  PIN_IN_FLICKER_MODE_SWITCH    = { 2, PULL_UP_ON };
+static const struct input_pin  PIN_IN_FLICKER_ONOFF_SWITCH   = { 3, PULL_UP_ON };
+static const struct input_pin  PIN_IN_DIMMING_POT            = { 4, PULL_UP_OFF };
 static const struct output_pin PIN_OUT_FLICKER               = { 0 };
 static const struct output_pin PIN_OUT_DIMMED                = { 1 };
 
