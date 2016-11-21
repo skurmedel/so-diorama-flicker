@@ -97,7 +97,7 @@ ISR(TIMER0_OVF_vect)
     /*
         Update the duty cycle for timer0, controlling the flickering output.
     */
-    OCR0A = flicker_brightness;
+    OCR0A = flicker_brightness & dimming;
     flicker_update = 1;
 }
 
