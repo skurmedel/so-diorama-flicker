@@ -28,3 +28,8 @@ disasm: main.elf
 
 dude: main.hex 
 	avrdude -c $(PROGRAMMER) -P usb -U flash:w:main.hex:i
+
+clean:
+	rm $(OBJECTS)
+	rm main.hex
+	rm main.elf
