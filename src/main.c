@@ -83,6 +83,26 @@ void init_io(void)
     */
     PORTB |= (_BV(PIN_IN_FLICKER_ONOFF_SWITCH.n) * PIN_IN_FLICKER_ONOFF_SWITCH.pull_up)
           |  (_BV(PIN_IN_FLICKER_MODE_SWITCH.n) * PIN_IN_FLICKER_MODE_SWITCH.pull_up);
+    
+    /*
+        - ADC internal voltage reference to 1.1v.
+        - Set ADC data to be left adjusted.
+        - ADC input to ADC2 (PB4).
+    */
+    ADMUX |= _BV(7) | _BV(5) | _BV(1);
+    ADMUX &= ~(_BV(4) | _BV(6) | _BV(3) | _BV(2) | _BV(0));
+
+    /*
+        - Turn on ADC interrupt.
+        - Turn on autotriggering.
+    */
+    ADCSRA |= _BV(3) | _BV(5);
+
+    /*
+        - ADC autotriggering source Timer0 clock overflow.
+    */
+    ADCSRB |= _BV(2);
+    ADCSRB &= ~(_BV(1) | _BV(0));
 }
 
 /*
@@ -113,8 +133,10 @@ ISR(TIMER1_OVF_vect)
 ISR(ADC_vect)
 {
     /*
-        Update dimming value.
+        Update dimming value. We require ADLAR (left adjusted ADC output) to be
+        on here, if it is not, this will not read the correct value.
     */
+    dimming = ADCH;
 }
 
 int main(void)
