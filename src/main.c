@@ -4,6 +4,8 @@
 #include <avr/sleep.h>
 #include <util/atomic.h>
 
+#include "flicker.h"
+
 struct input_pin
 {
     uint8_t     n;
@@ -122,9 +124,15 @@ int main(void)
     }
 
     flicker_brightness = 0x80;
+    struct flicker_state flicker_s = flicker_state_create(1);
 
     while (1)
     {
+        uint8_t new_flicker_brightness = flicker_fluorescent(&flicker_s);
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
+            flicker_brightness = new_flicker_brightness;
+        }
         sleep_mode();
     }
 
