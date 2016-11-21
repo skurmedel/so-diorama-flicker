@@ -85,6 +85,10 @@ void init_io(void)
           |  (_BV(PIN_IN_FLICKER_MODE_SWITCH.n) * PIN_IN_FLICKER_MODE_SWITCH.pull_up);
 }
 
+/*
+    Instructs the main loop that we need to compute the next flickering value.
+*/
+volatile uint8_t flicker_update;
 volatile uint8_t flicker_brightness; 
 volatile uint8_t dimming;
 
@@ -94,6 +98,7 @@ ISR(TIMER0_OVF_vect)
         Update the duty cycle for timer0, controlling the flickering output.
     */
     OCR0A = flicker_brightness;
+    flicker_update = 1;
 }
 
 ISR(TIMER1_OVF_vect)
@@ -128,10 +133,33 @@ int main(void)
 
     while (1)
     {
-        uint8_t new_flicker_brightness = flicker_fluorescent(&flicker_s);
+        /*
+            Generally our system clock will run much faster than the PWM does so
+            we can precompute the value for the next PWM update, then sleep until
+            it interrupts us. As we don't know what interrupt woke us, we rely on
+            the flicker_update flag.
+
+            We also need to do the synchronization atomically so that no 
+            interrupt occurs in the middle of a check or store.
+        */
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
         {
-            flicker_brightness = new_flicker_brightness;
+            if (flicker_update == 1)
+            {
+                /*
+                    We particurarly don't care whether we interrupt here as 
+                    indicated above, this is also the expensive part, so we just
+                    allow interrupts.
+                */
+                uint8_t new_flicker_brightness;
+                NONATOMIC_BLOCK(NONATOMIC_RESTORESTATE)
+                {
+                    new_flicker_brightness = flicker_fluorescent(&flicker_s);                
+                }
+                
+                flicker_brightness = new_flicker_brightness;
+                flicker_update = 0;
+            }
         }
         sleep_mode();
     }
