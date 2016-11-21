@@ -83,6 +83,33 @@ void init_io(void)
           |  (_BV(PIN_IN_FLICKER_MODE_SWITCH.n) * PIN_IN_FLICKER_MODE_SWITCH.pull_up);
 }
 
+volatile uint8_t flicker_brightness; 
+volatile uint8_t dimming;
+
+ISR(TIMER0_OVF_vect)
+{
+    /*
+        Update the duty cycle for timer0, controlling the flickering output.
+    */
+    OCR0A = flicker_brightness;
+}
+
+ISR(TIMER1_OVF_vect)
+{
+    /*
+        Update the duty cycle for timer1, controlling the standard dimming 
+        output.
+    */
+    OCR1A = dimming;
+}
+
+ISR(ADC_vect)
+{
+    /*
+        Update dimming value.
+    */
+}
+
 int main(void)
 {
     /* 
@@ -93,6 +120,8 @@ int main(void)
         init_io();
         init_timers();
     }
+
+    flicker_brightness = 0x80;
 
     while (1)
     {
