@@ -153,6 +153,11 @@ int main(void)
     flicker_brightness = 0x80;
     struct flicker_state flicker_s = flicker_state_create(1);
 
+    /*
+        Turn ADEN on (the ADC enable).
+    */
+    ADCSRA |= _BV(7);
+
     while (1)
     {
         /*
